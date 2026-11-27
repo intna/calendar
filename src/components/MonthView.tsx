@@ -1,5 +1,5 @@
 import { cn } from '@/lib/cn'
-import { WEEKDAY_LABELS, formatShortDate, isSameMonth, monthMatrix } from '@/lib/dates'
+import { WEEKDAY_LABELS, isSameMonth, monthMatrix } from '@/lib/dates'
 import { formatU, pnlClass } from '@/lib/format'
 import type { DayStat } from '@/lib/types'
 import type { FlowMark } from './types'
@@ -23,7 +23,7 @@ export function MonthView({
     <div>
       <div className="grid grid-cols-7 border-b border-hive-line">
         {WEEKDAY_LABELS.map((label) => (
-          <div key={label} className="px-2 py-3 text-center text-[11px] tracking-[0.18em] text-hive-muted">
+          <div key={label} className="px-2 py-2 text-center text-[11px] tracking-[0.12em] text-hive-muted">
             {label}
           </div>
         ))}
@@ -42,7 +42,7 @@ export function MonthView({
               onClick={() => onSelect(day)}
               aria-pressed={selected}
               className={cn(
-                'flex min-h-[88px] flex-col px-2 py-2 text-left sm:min-h-[108px] sm:px-3',
+                'flex min-h-[60px] flex-col px-2 py-1.5 text-left sm:min-h-[72px] sm:px-2.5',
                 cellTone(pnl, outside, Boolean(stat)),
                 selected && 'shadow-pick',
               )}
@@ -58,28 +58,21 @@ export function MonthView({
                   {Number(day.slice(8))}
                 </span>
               </div>
-              <div className={cn('mt-3', outside && 'opacity-55')}>
+              <div className={cn('mt-1.5', outside && 'opacity-55')}>
                 {typeof pnl === 'number' ? (
-                  <div className={cn('num text-sm leading-none sm:text-lg', pnlClass(pnl))}>{formatU(pnl, true)}</div>
+                  <div className={cn('num text-sm leading-none', pnlClass(pnl))}>{formatU(pnl, true)}</div>
                 ) : null}
-                {stat && pnl === null ? <div className="text-[11px] tracking-[0.14em] text-hive-muted">起点</div> : null}
+                {stat && pnl === null ? <div className="text-[11px] tracking-[0.08em] text-hive-muted">Start</div> : null}
               </div>
               {flow && (flow.deposit > 0 || flow.withdraw > 0) ? (
-                <div className={cn('mt-auto flex gap-2 pt-2 text-[10px] tracking-wide text-hive-muted', outside && 'opacity-50')}>
-                  {flow.deposit > 0 ? <span>充</span> : null}
-                  {flow.withdraw > 0 ? <span>提</span> : null}
+                <div className={cn('mt-auto flex gap-2 pt-1 text-[10px] tracking-wide text-hive-muted', outside && 'opacity-50')}>
+                  {flow.deposit > 0 ? <span>In</span> : null}
+                  {flow.withdraw > 0 ? <span>Out</span> : null}
                 </div>
               ) : null}
             </button>
           )
         })}
-      </div>
-      <div className="flex flex-wrap gap-x-5 gap-y-2 px-4 py-3 text-[11px] tracking-wide text-hive-muted sm:px-5">
-        <span>黄字为盈利</span>
-        <span>黑字为亏损</span>
-        <span>起点不计算收益</span>
-        <span>充 / 提表示当天有资金进出</span>
-        <span className="ml-auto hidden sm:inline">点选 {formatShortDate(date)} 查看明细</span>
       </div>
     </div>
   )

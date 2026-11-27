@@ -17,8 +17,8 @@ const display = Oswald({
 })
 
 export const metadata: Metadata = {
-  title: '收益日历',
-  description: 'Polymarket 每日收益、充值与提现',
+  title: 'PnL Calendar',
+  description: 'Daily Polymarket profit, deposits, and withdrawals',
   robots: { index: false, follow: false },
 }
 
@@ -30,7 +30,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body className={`${sans.variable} ${display.variable} font-sans antialiased`}>{children}</body>
     </html>
   )

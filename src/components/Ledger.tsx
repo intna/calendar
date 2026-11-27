@@ -71,13 +71,13 @@ export function Ledger({
             <span className="ml-1.5 font-sans text-[11px] tracking-[0.14em] text-hive-muted">U</span>
           </div>
         ) : day ? (
-          <div className="mt-3 text-sm text-hive-muted">起点余额 {formatU(day.balance)} U</div>
+          <div className="mt-3 text-sm text-hive-muted">Baseline {formatU(day.balance)} U</div>
         ) : (
-          <div className="mt-3 text-sm text-hive-muted">尚未记入余额</div>
+          <div className="mt-3 text-sm text-hive-muted">No balance yet</div>
         )}
         {day && day.pnl !== null ? (
           <p className="mt-3 text-xs leading-5 text-hive-muted">
-            上次 {formatShortDate(day.prevDate ?? date)} {formatU(day.prevBalance ?? 0)} · 充值 {formatU(day.deposits)} · 提现{' '}
+            Previous {formatShortDate(day.prevDate ?? date)} {formatU(day.prevBalance ?? 0)} · In {formatU(day.deposits)} · Out{' '}
             {formatU(day.withdrawals)}
           </p>
         ) : null}
@@ -89,23 +89,23 @@ export function Ledger({
           event.preventDefault()
           setBalanceError('')
           if (future) {
-            setBalanceError('只能记入今天或过去的余额')
+            setBalanceError('Only today or earlier dates can be recorded')
             return
           }
           const amount = parseMoney(balanceInput)
           if (amount === null) {
-            setBalanceError('请输入有效余额，可以为 0')
+            setBalanceError('Enter a valid balance. Zero is allowed.')
             return
           }
           void onSaveBalance(amount, balanceNote.trim())
         }}
       >
-        <div className="text-[11px] tracking-[0.18em] text-hive-muted">记账</div>
+        <div className="text-[11px] tracking-[0.18em] text-hive-muted">ENTRY</div>
         <label className="block text-sm" htmlFor="entry-date">
-          日期
+          Date
           <div className="mt-2 flex gap-2">
             <button type="button" className={ghost} onClick={() => onDate(addDays(date, -1))}>
-              前一天
+              Prev
             </button>
             <input
               id="entry-date"
@@ -123,12 +123,12 @@ export function Ledger({
               disabled={date >= today}
               onClick={() => onDate(addDays(date, 1))}
             >
-              后一天
+              Next
             </button>
           </div>
         </label>
         <label className="block text-sm" htmlFor="balance">
-          当日余额
+          Balance
           <input
             id="balance"
             inputMode="decimal"
@@ -139,20 +139,20 @@ export function Ledger({
           />
         </label>
         <label className="block text-sm" htmlFor="balance-note">
-          备注
+          Note
           <input
             id="balance-note"
             maxLength={200}
-            placeholder="可选"
+            placeholder="Optional"
             value={balanceNote}
             onChange={(event) => setBalanceNote(event.target.value)}
             className={`${field} mt-2`}
           />
         </label>
         <button type="submit" disabled={saving || future} className={primary}>
-          {saving ? '保存中…' : day ? '更新余额' : '保存余额'}
+          {saving ? 'Saving…' : day ? 'Update balance' : 'Save balance'}
         </button>
-        {future ? <p className="text-xs text-hive-muted">未来的日期不能记余额。</p> : null}
+        {future ? <p className="text-xs text-hive-muted">Future dates cannot be recorded.</p> : null}
         {balanceError ? <p className="text-sm text-hive-yellow">{balanceError}</p> : null}
       </form>
 
@@ -162,10 +162,10 @@ export function Ledger({
             type="button"
             className="text-xs tracking-wide text-hive-muted hover:text-hive-ivory"
             onClick={() => {
-              if (window.confirm('删除这一天的余额？收益会按剩下的记录重新计算。')) void onDeleteBalance()
+              if (window.confirm('Delete this balance? PnL will be recalculated from the remaining records.')) void onDeleteBalance()
             }}
           >
-            删除当日余额
+            Delete balance
           </button>
         </div>
       ) : null}
@@ -176,12 +176,12 @@ export function Ledger({
           event.preventDefault()
           setFlowError('')
           if (future) {
-            setFlowError('只能记入今天或过去的流水')
+            setFlowError('Only today or earlier cashflows can be recorded')
             return
           }
           const amount = parseMoney(flowAmount)
           if (amount === null || amount <= 0) {
-            setFlowError('请输入大于 0 的金额')
+            setFlowError('Enter an amount greater than 0')
             return
           }
           void onAddCashflow(flowType, amount, flowNote.trim()).then((saved) => {
@@ -191,11 +191,11 @@ export function Ledger({
           })
         }}
       >
-        <div className="text-[11px] tracking-[0.18em] text-hive-muted">充值 / 提现</div>
+        <div className="text-[11px] tracking-[0.18em] text-hive-muted">DEPOSIT / WITHDRAWAL</div>
         <div className="flex border border-hive-line">
           {([
-            ['deposit', '充值'],
-            ['withdraw', '提现'],
+            ['deposit', 'Deposit'],
+            ['withdraw', 'Withdraw'],
           ] as const).map(([type, label]) => (
             <button
               key={type}
@@ -210,40 +210,40 @@ export function Ledger({
         </div>
         <input
           inputMode="decimal"
-          placeholder="金额"
-          aria-label="流水金额"
+          placeholder="Amount"
+          aria-label="Cashflow amount"
           value={flowAmount}
           onChange={(event) => setFlowAmount(event.target.value)}
           className={field}
         />
         <input
           maxLength={200}
-          placeholder="备注，可选"
-          aria-label="流水备注"
+          placeholder="Note, optional"
+          aria-label="Cashflow note"
           value={flowNote}
           onChange={(event) => setFlowNote(event.target.value)}
           className={field}
         />
         <button type="submit" disabled={saving || future} className={primary}>
-          记入流水
+          Add cashflow
         </button>
         {flowError ? <p className="text-sm text-hive-yellow">{flowError}</p> : null}
       </form>
 
       <div className="px-5 py-5">
         <div className="flex items-center justify-between">
-          <div className="text-[11px] tracking-[0.18em] text-hive-muted">流水</div>
+          <div className="text-[11px] tracking-[0.18em] text-hive-muted">CASHFLOWS</div>
           <div className="flex border border-hive-line text-xs">
             <button type="button" className={cn('px-2 py-1', scope === 'day' ? 'bg-hive-yellow text-black' : 'text-hive-muted')} onClick={() => setScope('day')}>
-              当日
+              Day
             </button>
             <button type="button" className={cn('px-2 py-1', scope === 'period' ? 'bg-hive-yellow text-black' : 'text-hive-muted')} onClick={() => setScope('period')}>
-              本期
+              Period
             </button>
           </div>
         </div>
         {visible.length === 0 ? (
-          <p className="mt-4 text-sm text-hive-muted">{scope === 'day' ? '这一天没有充值或提现。' : '这个区间没有流水。'}</p>
+          <p className="mt-4 text-sm text-hive-muted">{scope === 'day' ? 'No deposits or withdrawals on this day.' : 'No cashflows in this range.'}</p>
         ) : (
           <ul className="mt-4 divide-y divide-hive-line">
             {visible.map((flow) => {
@@ -252,13 +252,13 @@ export function Ledger({
                 <li key={flow.id} className="flex items-start justify-between gap-3 py-3">
                   <div>
                     <div className="text-sm">
-                      {flow.type === 'deposit' ? '充值' : '提现'}
+                      {flow.type === 'deposit' ? 'Deposit' : 'Withdrawal'}
                       <span className="num ml-2 text-hive-ivory">{formatU(flow.amount)}</span>
                     </div>
                     <div className="mt-1 text-xs text-hive-muted">
                       {formatShortDate(flow.date)}
-                      {state === 'pending' ? ' · 待计入' : ''}
-                      {state === 'ignored' ? ' · 起点当日不计' : ''}
+                      {state === 'pending' ? ' · Pending' : ''}
+                      {state === 'ignored' ? ' · Ignored on baseline day' : ''}
                       {flow.note ? ` · ${flow.note}` : ''}
                     </div>
                   </div>
@@ -266,10 +266,10 @@ export function Ledger({
                     type="button"
                     className="text-xs text-hive-muted hover:text-hive-ivory"
                     onClick={() => {
-                      if (window.confirm('删除这条流水？收益会按剩余记录重算。')) void onDeleteCashflow(flow.id)
+                      if (window.confirm('Delete this cashflow? PnL will be recalculated from the remaining records.')) void onDeleteCashflow(flow.id)
                     }}
                   >
-                    删除
+                    Delete
                   </button>
                 </li>
               )
@@ -277,13 +277,6 @@ export function Ledger({
           </ul>
         )}
 
-        <details className="mt-6 border-t border-hive-line pt-4 text-sm text-hive-muted">
-          <summary className="tracking-[0.12em] text-hive-ivory">收益怎么算</summary>
-          <p className="mt-3 leading-6">收益 = 本次余额 − 上次余额 − 期间充值 + 期间提现。</p>
-          <p className="mt-2 leading-6">
-            例如钱包里有 800 U，提现 500 U，第二天余额 300 U，收益是 0，不是亏损 500。充值同样会从余额变化里剔除。
-          </p>
-        </details>
       </div>
     </aside>
   )

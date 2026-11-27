@@ -9,7 +9,7 @@ export const runtime = 'nodejs'
 
 async function readBody(request: Request): Promise<Record<string, unknown>> {
   const body: unknown = await request.json()
-  if (!body || typeof body !== 'object') throw new HttpError(400, '请求格式无效')
+  if (!body || typeof body !== 'object') throw new HttpError(400, 'Invalid request')
   return body as Record<string, unknown>
 }
 
@@ -35,7 +35,7 @@ export function DELETE(request: Request) {
     const date = assertDate(new URL(request.url).searchParams.get('date'))
     const db = await getDb()
     const result = await db.collection('balances').deleteOne({ date })
-    if (result.deletedCount === 0) throw new HttpError(404, '这一天没有余额记录')
+    if (result.deletedCount === 0) throw new HttpError(404, 'No balance on this day')
     return NextResponse.json(await loadSeries())
   })
 }

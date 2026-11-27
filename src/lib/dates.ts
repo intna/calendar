@@ -1,4 +1,21 @@
-export const WEEKDAY_LABELS = ['一', '二', '三', '四', '五', '六', '日'] as const
+export const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
+
+const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTH_LONG = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
 
 export function parseISODate(iso: string): Date {
   const [year, month, day] = iso.split('-').map(Number)
@@ -131,18 +148,22 @@ export function withDayInMonth(sourceDay: string, monthDate: string): string {
 
 export function formatLongDate(iso: string): string {
   const date = parseISODate(iso)
-  const weekday = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()]
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 周${weekday}`
+  const weekday = WEEKDAY_NAMES[date.getDay()]
+  return `${weekday}, ${MONTH_SHORT[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
 }
 
 export function formatShortDate(iso: string): string {
   const date = parseISODate(iso)
-  return `${date.getMonth() + 1}月${date.getDate()}日`
+  return `${MONTH_SHORT[date.getMonth()]} ${date.getDate()}`
 }
 
 export function formatMonthLabel(iso: string): string {
   const date = parseISODate(iso)
-  return `${date.getFullYear()}年${date.getMonth() + 1}月`
+  return `${MONTH_LONG[date.getMonth()]} ${date.getFullYear()}`
+}
+
+export function formatMonthName(month: number): string {
+  return MONTH_SHORT[month - 1] ?? ''
 }
 
 export function formatTick(iso: string): string {

@@ -32,7 +32,7 @@ async function ensureIndexes(db: Db) {
 
 export async function getDb(): Promise<Db> {
   const uri = process.env.MONGODB_URI
-  if (!uri) throw new Error('MONGODB_URI 未配置')
+  if (!uri) throw new Error('MONGODB_URI is not set')
 
   if (!globalForMongo.clientPromise) {
     const client = new MongoClient(uri, { serverSelectionTimeoutMS: 4000 })

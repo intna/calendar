@@ -30,9 +30,9 @@ export function Analytics({
 }) {
   const hasChart = points.some((point) => point.pnl !== null || point.cumulative !== null)
   const slices = [
-    { name: '盈利', value: summary.win, color: '#FFE600' },
-    { name: '亏损', value: summary.loss, color: '#141414' },
-    { name: '持平', value: summary.flat, color: '#D9D9D2' },
+    { name: 'Profit', value: summary.win, color: '#FFE600' },
+    { name: 'Loss', value: summary.loss, color: '#141414' },
+    { name: 'Flat', value: summary.flat, color: '#D9D9D2' },
   ].filter((slice) => slice.value > 0)
 
   return (
@@ -86,18 +86,18 @@ export function Analytics({
           </div>
         ) : (
           <div className="flex h-[320px] items-center justify-center text-sm text-hive-muted">
-            记入至少两天余额后，这里会画出收益曲线。
+            Record at least two balances to draw the curve.
           </div>
         )}
       </div>
 
       <div className="bg-white px-5 py-4">
-        <h3 className="text-sm tracking-[0.16em]">胜负分布</h3>
+        <h3 className="text-sm tracking-[0.16em]">WIN / LOSS</h3>
         <div className="relative mx-auto mt-2 h-[210px] w-[210px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={slices.length ? slices : [{ name: '暂无', value: 1, color: '#F1F1EC' }]}
+                data={slices.length ? slices : [{ name: 'None', value: 1, color: '#F1F1EC' }]}
                 dataKey="value"
                 innerRadius={64}
                 outerRadius={84}
@@ -105,29 +105,29 @@ export function Analytics({
                 stroke="#FFFFFF"
                 isAnimationActive={false}
               >
-                {(slices.length ? slices : [{ name: '暂无', value: 1, color: '#F1F1EC' }]).map((slice) => (
+                {(slices.length ? slices : [{ name: 'None', value: 1, color: '#F1F1EC' }]).map((slice) => (
                   <Cell key={slice.name} fill={slice.color} />
                 ))}
               </Pie>
             </PieChart>
           </ResponsiveContainer>
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-[10px] tracking-[0.18em] text-hive-muted">胜率</div>
+            <div className="text-[10px] tracking-[0.18em] text-hive-muted">WIN RATE</div>
             <div className="num text-3xl text-hive-ivory">{formatPercent(summary.winRate)}</div>
           </div>
         </div>
         <div className="mt-1 space-y-2 text-sm">
-          <Legend color="#FFE600" label="盈利" value={`${summary.win} 天`} />
-          <Legend color="#141414" label="亏损" value={`${summary.loss} 天`} />
-          <Legend color="#D9D9D2" label="持平" value={`${summary.flat} 天`} />
+          <Legend color="#FFE600" label="Profit" value={`${summary.win} days`} />
+          <Legend color="#141414" label="Loss" value={`${summary.loss} days`} />
+          <Legend color="#D9D9D2" label="Flat" value={`${summary.flat} days`} />
         </div>
         <div className="mt-5 space-y-3 border-t border-hive-line pt-4 text-sm">
-          <Row label="最高单日" value={summary.best ? formatU(summary.best.pnl, true) : '—'} extra={summary.best ? formatShortDate(summary.best.date) : ''} tone={summary.best?.pnl ?? null} />
-          <Row label="最低单日" value={summary.worst ? formatU(summary.worst.pnl, true) : '—'} extra={summary.worst ? formatShortDate(summary.worst.date) : ''} tone={summary.worst?.pnl ?? null} />
-          <Row label="日均收益" value={summary.avg === null ? '—' : formatU(summary.avg, true)} tone={summary.avg} />
-          <Row label="充值" value={formatU(summary.deposits)} />
-          <Row label="提现" value={formatU(summary.withdrawals)} />
-          <Row label="收益率" value={formatRoi(summary.roi)} tone={summary.roi} />
+          <Row label="Best day" value={summary.best ? formatU(summary.best.pnl, true) : '—'} extra={summary.best ? formatShortDate(summary.best.date) : ''} tone={summary.best?.pnl ?? null} />
+          <Row label="Worst day" value={summary.worst ? formatU(summary.worst.pnl, true) : '—'} extra={summary.worst ? formatShortDate(summary.worst.date) : ''} tone={summary.worst?.pnl ?? null} />
+          <Row label="Daily average" value={summary.avg === null ? '—' : formatU(summary.avg, true)} tone={summary.avg} />
+          <Row label="Deposits" value={formatU(summary.deposits)} />
+          <Row label="Withdrawals" value={formatU(summary.withdrawals)} />
+          <Row label="Return" value={formatRoi(summary.roi)} tone={summary.roi} />
         </div>
       </div>
     </section>
@@ -146,8 +146,8 @@ function ChartTip({
   return (
     <div className="border border-hive-line bg-white px-3 py-2 text-xs shadow-sm">
       <div className="text-hive-muted">{point.title}</div>
-      <div className="mt-1 text-hive-ivory">区间 {point.pnl === null ? '—' : formatU(point.pnl, true)}</div>
-      <div className="text-hive-ivory">累计 {point.cumulative === null ? '—' : formatU(point.cumulative, true)}</div>
+      <div className="mt-1 text-hive-ivory">Period {point.pnl === null ? '—' : formatU(point.pnl, true)}</div>
+      <div className="text-hive-ivory">Cumulative {point.cumulative === null ? '—' : formatU(point.cumulative, true)}</div>
     </div>
   )
 }

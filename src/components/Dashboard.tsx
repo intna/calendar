@@ -22,10 +22,10 @@ const ChartPanel = dynamic(() => import('@/components/Analytics').then((mod) => 
 })
 
 const views: Array<{ id: ViewMode; label: string }> = [
-  { id: 'day', label: '日' },
-  { id: 'week', label: '周' },
-  { id: 'month', label: '月' },
-  { id: 'year', label: '年' },
+  { id: 'day', label: 'Day' },
+  { id: 'week', label: 'Week' },
+  { id: 'month', label: 'Month' },
+  { id: 'year', label: 'Year' },
 ]
 
 export function Dashboard() {
@@ -50,10 +50,10 @@ export function Dashboard() {
     const response = await fetch('/api/series', { cache: 'no-store' })
     const data: unknown = await response.json()
     if (!response.ok) {
-      const message = readError(data) || '加载失败'
+      const message = readError(data) || 'Could not load'
       throw new Error(message)
     }
-    if (!isSeries(data)) throw new Error('加载失败')
+    if (!isSeries(data)) throw new Error('Could not load')
     setSeries(data)
   }, [])
 
@@ -68,7 +68,7 @@ export function Dashboard() {
     let cancelled = false
     load()
       .catch((reason: unknown) => {
-        if (!cancelled) setError(reason instanceof Error ? reason.message : '加载失败')
+        if (!cancelled) setError(reason instanceof Error ? reason.message : 'Could not load')
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -88,12 +88,12 @@ export function Dashboard() {
           headers: { 'Content-Type': 'application/json', ...(init.headers ?? {}) },
         })
         const data: unknown = await response.json()
-        if (!response.ok || !isSeries(data)) throw new Error(readError(data) || '保存失败')
+        if (!response.ok || !isSeries(data)) throw new Error(readError(data) || 'Could not save')
         setSeries(data)
         flash(success)
         return true
       } catch (reason) {
-        setError(reason instanceof Error ? reason.message : '保存失败')
+        setError(reason instanceof Error ? reason.message : 'Could not save')
         return false
       } finally {
         setSaving(false)
@@ -114,8 +114,8 @@ export function Dashboard() {
     if (!series || !date || !range) return null
     if (view === 'year') {
       return {
-        title: '每月收益',
-        caption: '黄柱为当月收益，黑线为累计',
+        title: 'Monthly PnL',
+        caption: 'Yellow bars are the month. The black line is cumulative.',
         points: monthlyChart(series.days, Number(date.slice(0, 4))),
         summary: summary ?? summarize(series.days, series.cashflows, range.start, range.end),
       }
@@ -123,15 +123,15 @@ export function Dashboard() {
     if (view === 'day') {
       const from = addDays(date, -29)
       return {
-        title: '近 30 日',
-        caption: '黄柱为当日收益，黑线为累计',
+        title: 'Last 30 days',
+        caption: 'Yellow bars are the day. The black line is cumulative.',
         points: dailyChart(series.days, from, date),
         summary: summarize(series.days, series.cashflows, from, date),
       }
     }
     return {
-      title: view === 'week' ? '本周每日收益' : '本月每日收益',
-      caption: '黄柱为当日收益，黑线为累计',
+      title: view === 'week' ? 'This week' : 'This month',
+      caption: 'Yellow bars are the day. The black line is cumulative.',
       points: dailyChart(series.days, range.start, range.end),
       summary: summary ?? summarize(series.days, series.cashflows, range.start, range.end),
     }
@@ -146,13 +146,7 @@ export function Dashboard() {
         <div className="h-[3px] bg-hive-yellow" />
         <header className="border-b border-hive-line bg-white/95 backdrop-blur">
           <div className="mx-auto flex max-w-[1480px] flex-wrap items-center gap-4 px-4 py-3.5 sm:px-6">
-            <div className="flex items-center gap-3">
-              <Mark />
-              <div>
-                <div className="text-[15px] font-semibold tracking-[0.24em]">收益日历</div>
-                <div className="mt-1 text-[10px] tracking-[0.34em] text-hive-muted">POLYMARKET</div>
-              </div>
-            </div>
+            <Mark />
             <div className="ml-auto flex items-center gap-2">
               <div className="flex border border-hive-line">
                 {views.map((item) => (
@@ -162,7 +156,7 @@ export function Dashboard() {
                     aria-pressed={view === item.id}
                     onClick={() => setView(item.id)}
                     className={cn(
-                      'px-3 py-2 text-sm tracking-[0.18em] sm:px-4',
+                      'px-3 py-2 text-sm tracking-[0.08em] sm:px-4',
                       view === item.id ? 'bg-hive-yellow font-semibold text-black' : 'text-hive-muted hover:text-hive-ivory',
                     )}
                   >
@@ -176,11 +170,11 @@ export function Dashboard() {
                 onClick={() => {
                   setLoading(true)
                   load()
-                    .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : '加载失败'))
+                    .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Could not load'))
                     .finally(() => setLoading(false))
                 }}
               >
-                {loading && series ? '同步中' : '刷新'}
+                {loading && series ? 'Syncing' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -191,12 +185,12 @@ export function Dashboard() {
         {!mounted || (loading && !series) ? <Skeleton /> : null}
         {mounted && !loading && !series ? (
           <DatabaseError
-            message={error || '无法连接 MongoDB。请先启动数据库，并检查 MONGODB_URI。'}
+            message={error || 'Unable to reach MongoDB. Start the database and check MONGODB_URI.'}
             onRetry={() => {
               setLoading(true)
               setError('')
               load()
-                .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : '加载失败'))
+                .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Could not load'))
                 .finally(() => setLoading(false))
             }}
           />
@@ -215,15 +209,15 @@ export function Dashboard() {
                     <h2 className="mt-1 text-xl font-semibold tracking-wide">{range.label}</h2>
                   </div>
                   <div className="flex items-center gap-2">
-                    <IconButton label="上一期" onClick={() => setDate(shiftDate(date, view, -1))} />
-                    <IconButton label="下一期" direction="right" onClick={() => setDate(shiftDate(date, view, 1))} />
+                    <IconButton label="Previous" onClick={() => setDate(shiftDate(date, view, -1))} />
+                    <IconButton label="Next" direction="right" onClick={() => setDate(shiftDate(date, view, 1))} />
                     {date !== today ? (
                       <button
                         type="button"
                         className="border border-hive-line px-3 py-2 text-sm text-hive-ivory hover:border-hive-yellow"
                         onClick={() => setDate(today)}
                       >
-                        回到今天
+                        Today
                       </button>
                     ) : null}
                   </div>
@@ -259,7 +253,7 @@ export function Dashboard() {
               </section>
               <ChartPanel title={chart.title} caption={chart.caption} points={chart.points} summary={chart.summary} />
               <p className="text-xs tracking-wide text-hive-muted">
-                收益 = 本次余额 − 上次余额 − 期间充值 + 期间提现。第一天的余额是起点。
+                PnL = current balance − previous balance − deposits + withdrawals. The first balance is the baseline.
               </p>
             </div>
             <Ledger
@@ -272,17 +266,17 @@ export function Dashboard() {
               saving={saving}
               onDate={setDate}
               onSaveBalance={(balance, note) =>
-                write('/api/balances', { method: 'POST', body: JSON.stringify({ date, balance, note }) }, '余额已保存')
+                write('/api/balances', { method: 'POST', body: JSON.stringify({ date, balance, note }) }, 'Balance saved')
               }
-              onDeleteBalance={() => write(`/api/balances?date=${date}`, { method: 'DELETE' }, '余额已删除')}
+              onDeleteBalance={() => write(`/api/balances?date=${date}`, { method: 'DELETE' }, 'Balance deleted')}
               onAddCashflow={(type, amount, note) =>
                 write(
                   '/api/cashflows',
                   { method: 'POST', body: JSON.stringify({ date, type, amount, note }) },
-                  type === 'deposit' ? '充值已记入' : '提现已记入',
+                  type === 'deposit' ? 'Deposit recorded' : 'Withdrawal recorded',
                 )
               }
-              onDeleteCashflow={(id) => write(`/api/cashflows?id=${id}`, { method: 'DELETE' }, '流水已删除')}
+              onDeleteCashflow={(id) => write(`/api/cashflows?id=${id}`, { method: 'DELETE' }, 'Cashflow deleted')}
             />
           </div>
         ) : null}
@@ -297,30 +291,30 @@ function buildStats(series: SeriesData | null, summary: ReturnType<typeof summar
   const cumulative = [...(series?.days ?? [])].reverse().find((day) => day.cumulative !== null)?.cumulative ?? null
   return [
     {
-      label: '最新余额',
+      label: 'Latest balance',
       value: latest ? formatU(latest.balance) : '—',
       unit: latest ? 'U' : undefined,
-      hint: latest ? `截至 ${formatShortDate(latest.date)}` : '尚未记入',
+      hint: latest ? `As of ${formatShortDate(latest.date)}` : 'Not recorded',
       tone: 'ivory',
     },
     {
-      label: '累计收益',
+      label: 'Cumulative PnL',
       value: cumulative === null ? '—' : formatU(cumulative, true),
       unit: cumulative === null ? undefined : 'U',
-      hint: cumulative === null ? '记入两天余额后开始计算' : '已剔除充值提现',
+      hint: cumulative === null ? 'Record two balances to start' : 'Deposits and withdrawals excluded',
       tone: toneOf(cumulative),
     },
     {
-      label: '本期收益',
+      label: 'Period PnL',
       value: summary?.pnl === null || summary?.pnl === undefined ? '—' : formatU(summary.pnl, true),
       unit: summary?.pnl === null || summary?.pnl === undefined ? undefined : 'U',
-      hint: summary?.count ? `日均 ${formatU(summary.avg ?? 0, true)}` : '这个区间还没有收益',
+      hint: summary?.count ? `Daily avg ${formatU(summary.avg ?? 0, true)}` : 'No PnL in this range',
       tone: toneOf(summary?.pnl ?? null),
     },
     {
-      label: '期初收益率',
+      label: 'Return',
       value: formatRoi(summary?.roi ?? null),
-      hint: '本期收益 / 期初余额',
+      hint: 'Period PnL / starting balance',
       tone: toneOf(summary?.roi ?? null),
     },
   ]
@@ -344,10 +338,10 @@ function toneOf(value: number | null): StatItem['tone'] {
 }
 
 function viewName(view: ViewMode): string {
-  if (view === 'day') return '日视图'
-  if (view === 'week') return '周视图'
-  if (view === 'month') return '月视图'
-  return '年视图'
+  if (view === 'day') return 'Day'
+  if (view === 'week') return 'Week'
+  if (view === 'month') return 'Month'
+  return 'Year'
 }
 
 function isSeries(data: unknown): data is SeriesData {
@@ -380,13 +374,13 @@ function Skeleton() {
 function DatabaseError({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div className="border border-hive-line bg-white px-6 py-16 text-center">
-      <div className="text-[11px] tracking-[0.22em] text-hive-yellow">数据库未连接</div>
+      <div className="text-[11px] tracking-[0.22em] text-hive-yellow">DATABASE OFFLINE</div>
       <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-hive-ivory">{message}</p>
       <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-hive-muted">
-        本机可运行 docker compose up -d。服务器上启动 MongoDB 后，把连接串写进 MONGODB_URI。
+        Run docker compose up -d locally. On a server, start MongoDB and set MONGODB_URI.
       </p>
       <button type="button" onClick={onRetry} className="mt-6 bg-hive-yellow px-4 py-2 text-sm font-semibold text-black">
-        重试
+        Retry
       </button>
     </div>
   )

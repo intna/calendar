@@ -33,6 +33,6 @@ export async function loadSeries(): Promise<SeriesData> {
 }
 
 export function flowId(id: string): ObjectId {
-  if (!ObjectId.isValid(id)) throw new HttpError(400, '流水不存在')
+  if (!ObjectId.isValid(id)) throw new HttpError(400, 'Cashflow not found')
   return new ObjectId(id)
 }

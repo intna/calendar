@@ -1,5 +1,5 @@
 import { cn } from '@/lib/cn'
-import { WEEKDAY_LABELS, endOfMonth, formatShortDate, yearWeeks } from '@/lib/dates'
+import { WEEKDAY_LABELS, endOfMonth, formatMonthName, formatShortDate, yearWeeks } from '@/lib/dates'
 import { formatU, pnlClass } from '@/lib/format'
 import { summarize } from '@/lib/period'
 import type { Cashflow, DayStat } from '@/lib/types'
@@ -41,18 +41,18 @@ export function YearView({
               key={start}
               type="button"
               onClick={() => onOpenMonth(start)}
-              className={cn('bg-white px-4 py-4 text-left hover:bg-[#F6F6F3]', active && 'shadow-pick')}
+              className={cn('bg-white px-4 py-3 text-left hover:bg-[#F6F6F3]', active && 'shadow-pick')}
             >
-              <div className="text-[11px] tracking-[0.18em] text-hive-muted">{month}月</div>
-              <div className={cn('num mt-3 text-2xl', pnlClass(summary.pnl))}>
+              <div className="text-[11px] tracking-[0.14em] text-hive-muted">{formatMonthName(month)}</div>
+              <div className={cn('num mt-2 text-xl', pnlClass(summary.pnl))}>
                 {summary.pnl === null ? '—' : formatU(summary.pnl, true)}
               </div>
               <div className="mt-2 text-xs text-hive-muted">
                 {summary.count === 0
-                  ? '无记录'
+                  ? 'No records'
                   : summary.win === 0 && summary.loss === 0
-                    ? `持平 ${summary.flat} 天`
-                    : `盈利 ${summary.win} · 亏损 ${summary.loss}`}
+                    ? `Flat ${summary.flat} days`
+                    : `Up ${summary.win} · Down ${summary.loss}`}
               </div>
             </button>
           )
@@ -61,8 +61,8 @@ export function YearView({
 
       <div>
         <div className="mb-3 flex items-end justify-between gap-4">
-          <h3 className="text-sm tracking-[0.16em]">全年分布</h3>
-          <p className="text-xs text-hive-muted">黄越亮盈利越高，灰越深亏损越大</p>
+          <h3 className="text-sm tracking-[0.16em]">YEAR</h3>
+          <p className="text-xs text-hive-muted">Brighter yellow is a larger gain. Darker gray is a larger loss.</p>
         </div>
         <div className="overflow-x-auto pb-2">
           <div className="flex min-w-[760px]">
@@ -105,8 +105,8 @@ export function YearView({
 }
 
 function heatTitle(date: string, day: DayStat | undefined): string {
-  if (!day) return `${formatShortDate(date)} 无记录`
-  if (day.pnl === null) return `${formatShortDate(date)} 起点 ${formatU(day.balance)}`
+  if (!day) return `${formatShortDate(date)} · no record`
+  if (day.pnl === null) return `${formatShortDate(date)} · baseline ${formatU(day.balance)}`
   return `${formatShortDate(date)} ${formatU(day.pnl, true)}`
 }
 

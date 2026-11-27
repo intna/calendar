@@ -7,6 +7,7 @@ import {
   endOfYear,
   formatLongDate,
   formatMonthLabel,
+  formatMonthName,
   formatShortDate,
   formatTick,
   startOfMonth,
@@ -58,7 +59,7 @@ export function periodRange(view: ViewMode, date: string): { start: string; end:
   if (view === 'month') {
     return { start: startOfMonth(date), end: endOfMonth(date), label: formatMonthLabel(date) }
   }
-  return { start: startOfYear(date), end: endOfYear(date), label: `${date.slice(0, 4)}年` }
+  return { start: startOfYear(date), end: endOfYear(date), label: date.slice(0, 4) }
 }
 
 export function summarize(days: DayStat[], cashflows: Cashflow[], start: string, end: string): Summary {
@@ -146,8 +147,8 @@ export function monthlyChart(days: DayStat[], year: number): ChartPoint[] {
     if (settled.length) cumulative = settled[settled.length - 1].cumulative
     points.push({
       key: start,
-      label: `${month}月`,
-      title: `${year}年${month}月`,
+      label: formatMonthName(month),
+      title: `${formatMonthName(month)} ${year}`,
       pnl,
       cumulative,
     })
