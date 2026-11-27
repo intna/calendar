@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #141414;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+::selection {
+  background: #ffe600;
+  color: #111111;
+}
+
+:focus-visible {
+  outline: 2px solid #ffe600;
+  outline-offset: 2px;
+}
+
+input[type='date'] {
+  color-scheme: light;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: #141414;
+  caret-color: #141414;
+  transition: background-color 9999s ease-out;
+}
+
+.num {
+  font-family: var(--font-display), sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d5d5ce transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #d5d5ce;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
